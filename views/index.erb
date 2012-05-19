@@ -1,0 +1,25 @@
+<%= Time.now %>
+
+
+<form name="input" action="/post" method="post" enctype="multipart/form-data">
+<textarea cols="40" rows="10" name="post"></textarea><br/>
+<input type="submit" value="Submit" />
+</form>
+
+
+<%= 
+
+result = ""
+threads = locals[:db].execute("select * from threads")
+threads.each do |id|
+    thread_view = "select id,txt from posts where id = #{id[0]} union select posts.id,posts.txt from posts join replies on replies.reply where replies.thread= #{id[0]} and posts.id = replies.reply"
+    result += locals[:db].execute(thread_view).to_s + "<br/>"
+
+form = "<form name=\"input\" action=\"/post\" method=\"post\" enctype=\"multipart/form-data\"><textarea cols=\"40\" rows=\"10\" name=\"post\"></textarea><br/><input type=\"hidden\" name=\"thread\" value=\"#{id[0]}\" /><input type=\"submit\" value=\"Submit\" /></form>"
+    result += form
+end
+
+result
+
+%>
+
